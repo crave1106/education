@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+.page-title{margin-left:24px; width:100%; text-indent:0;}
+#dateTabs{text-indent: 2px;}
+.btn-area{margin: 0 24px 10px 24px;}
+.btn-area table{width:100%;}
+.btn-area table td:nth-child(odd){text-indent:0;}
+#searchTable tr td{width:200px !important;}

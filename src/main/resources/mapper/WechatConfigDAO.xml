@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crave.edu.mapper.WechatConfigDAO">
+  <resultMap id="BaseResultMap" type="com.crave.edu.bean.WechatConfig">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
+    <result column="public_q_rcode" jdbcType="VARCHAR" property="publicQRcode" />
+    <result column="customer_service_q_rcode" jdbcType="VARCHAR" property="customerServiceQRcode" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.crave.edu.bean.WechatConfigWithBLOBs">
+    <result column="activity_explain" jdbcType="LONGVARCHAR" property="activityExplain" />
+    <result column="activity_rules" jdbcType="LONGVARCHAR" property="activityRules" />
+    <result column="antic" jdbcType="LONGVARCHAR" property="antic" />
+    <result column="curriculum" jdbcType="LONGVARCHAR" property="curriculum" />
+    <result column="projectInfo" jdbcType="LONGVARCHAR" property="projectinfo" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, app_id, app_secret, public_q_rcode, customer_service_q_rcode, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    activity_explain, activity_rules, antic, curriculum, projectInfo
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.crave.edu.bean.WechatConfigExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from wechat_config
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.crave.edu.bean.WechatConfigExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wechat_config
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from wechat_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from wechat_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.crave.edu.bean.WechatConfigExample">
+    delete from wechat_config
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.crave.edu.bean.WechatConfigWithBLOBs">
+    insert into wechat_config (id, app_id, app_secret, 
+      public_q_rcode, customer_service_q_rcode, create_time, 
+      update_time, activity_explain, activity_rules, 
+      antic, curriculum, projectInfo
+      )
+    values (#{id,jdbcType=INTEGER}, #{appId,jdbcType=VARCHAR}, #{appSecret,jdbcType=VARCHAR}, 
+      #{publicQRcode,jdbcType=VARCHAR}, #{customerServiceQRcode,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{activityExplain,jdbcType=LONGVARCHAR}, #{activityRules,jdbcType=LONGVARCHAR}, 
+      #{antic,jdbcType=LONGVARCHAR}, #{curriculum,jdbcType=LONGVARCHAR}, #{projectinfo,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.crave.edu.bean.WechatConfigWithBLOBs">
+    insert into wechat_config
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="appSecret != null">
+        app_secret,
+      </if>
+      <if test="publicQRcode != null">
+        public_q_rcode,
+      </if>
+      <if test="customerServiceQRcode != null">
+        customer_service_q_rcode,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="activityExplain != null">
+        activity_explain,
+      </if>
+      <if test="activityRules != null">
+        activity_rules,
+      </if>
+      <if test="antic != null">
+        antic,
+      </if>
+      <if test="curriculum != null">
+        curriculum,
+      </if>
+      <if test="projectinfo != null">
+        projectInfo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="publicQRcode != null">
+        #{publicQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="customerServiceQRcode != null">
+        #{customerServiceQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityExplain != null">
+        #{activityExplain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="activityRules != null">
+        #{activityRules,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="antic != null">
+        #{antic,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="curriculum != null">
+        #{curriculum,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="projectinfo != null">
+        #{projectinfo,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.crave.edu.bean.WechatConfigExample" resultType="java.lang.Long">
+    select count(*) from wechat_config
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update wechat_config
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.appId != null">
+        app_id = #{record.appId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.appSecret != null">
+        app_secret = #{record.appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="record.publicQRcode != null">
+        public_q_rcode = #{record.publicQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerServiceQRcode != null">
+        customer_service_q_rcode = #{record.customerServiceQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.activityExplain != null">
+        activity_explain = #{record.activityExplain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.activityRules != null">
+        activity_rules = #{record.activityRules,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.antic != null">
+        antic = #{record.antic,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.curriculum != null">
+        curriculum = #{record.curriculum,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.projectinfo != null">
+        projectInfo = #{record.projectinfo,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update wechat_config
+    set id = #{record.id,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR},
+      app_secret = #{record.appSecret,jdbcType=VARCHAR},
+      public_q_rcode = #{record.publicQRcode,jdbcType=VARCHAR},
+      customer_service_q_rcode = #{record.customerServiceQRcode,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      activity_explain = #{record.activityExplain,jdbcType=LONGVARCHAR},
+      activity_rules = #{record.activityRules,jdbcType=LONGVARCHAR},
+      antic = #{record.antic,jdbcType=LONGVARCHAR},
+      curriculum = #{record.curriculum,jdbcType=LONGVARCHAR},
+      projectInfo = #{record.projectinfo,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update wechat_config
+    set id = #{record.id,jdbcType=INTEGER},
+      app_id = #{record.appId,jdbcType=VARCHAR},
+      app_secret = #{record.appSecret,jdbcType=VARCHAR},
+      public_q_rcode = #{record.publicQRcode,jdbcType=VARCHAR},
+      customer_service_q_rcode = #{record.customerServiceQRcode,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.crave.edu.bean.WechatConfigWithBLOBs">
+    update wechat_config
+    <set>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        app_secret = #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="publicQRcode != null">
+        public_q_rcode = #{publicQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="customerServiceQRcode != null">
+        customer_service_q_rcode = #{customerServiceQRcode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityExplain != null">
+        activity_explain = #{activityExplain,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="activityRules != null">
+        activity_rules = #{activityRules,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="antic != null">
+        antic = #{antic,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="curriculum != null">
+        curriculum = #{curriculum,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="projectinfo != null">
+        projectInfo = #{projectinfo,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.crave.edu.bean.WechatConfigWithBLOBs">
+    update wechat_config
+    set app_id = #{appId,jdbcType=VARCHAR},
+      app_secret = #{appSecret,jdbcType=VARCHAR},
+      public_q_rcode = #{publicQRcode,jdbcType=VARCHAR},
+      customer_service_q_rcode = #{customerServiceQRcode,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      activity_explain = #{activityExplain,jdbcType=LONGVARCHAR},
+      activity_rules = #{activityRules,jdbcType=LONGVARCHAR},
+      antic = #{antic,jdbcType=LONGVARCHAR},
+      curriculum = #{curriculum,jdbcType=LONGVARCHAR},
+      projectInfo = #{projectinfo,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.crave.edu.bean.WechatConfig">
+    update wechat_config
+    set app_id = #{appId,jdbcType=VARCHAR},
+      app_secret = #{appSecret,jdbcType=VARCHAR},
+      public_q_rcode = #{publicQRcode,jdbcType=VARCHAR},
+      customer_service_q_rcode = #{customerServiceQRcode,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

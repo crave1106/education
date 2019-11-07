@@ -1,0 +1,370 @@
+<#assign base=request.contextPath />
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<base id="base" href="${base}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>仨致文化管理后台</title>
+    <link rel="stylesheet" href="${base}/layui/css/layui.css?t=2" media="all">
+    <link rel="stylesheet" href="${base}/css/common.css?t=2" media="all">
+    <link rel="stylesheet" href="${base}/css/base.css" media="all">
+</head>
+<style type="text/css" id="LAY_layadmin_theme"></style>
+<style type="text/css">
+    .layui-nav-child{
+        -moz-user-select: none; /*火狐*/
+        -webkit-user-select: none;  /*webkit浏览器*/
+        -ms-user-select: none;   /*IE10*/
+        -khtml-user-select: none; /*早期浏览器*/
+        user-select: none;
+    }
+</style>
+<body>
+<div id="LAY_WRAP">
+    <div id='LAY_app' class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <a href="${base}/index" target="iframepage"><div class="layui-logo" lay-href="" style="cursor: pointer;"> <span>仨致文化</span> </div></a>
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-left layui-nav-tree" lay-filter="layui-nav-left">
+                <#if Session["BACK_USER_"]?exists && Session["BACK_USER_"].account != "system">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a class="" href="javascript:;"><i class="layui-icon layui-icon-face-smile"></i> <cite >配置</cite></a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="${base}/qrcode/index" target="iframepage"> <cite >校区管理</cite></a></dd>
+                            <dd><a href="${base}/parkCon/miniConfig" target="iframepage"> <cite >小程序配置</cite></a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a href="${base}/order/orderList" target="iframepage"> <cite>订单列表</cite></a></li>
+                    <li class="layui-nav-item"><a href="${base}/gate/gateConfig" target="iframepage"> <cite>岗亭管理</cite></a></li>
+                <#else>
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-face-smile"></i> <cite >配置</cite></a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="${base}/staticParam/page" target="iframepage"><i class="fa fa-clipboard fa-lg"></i> <cite >静态参数维护</cite></a></dd>
+                            <dd><a href="${base}/wxConfig/page" target="iframepage"><i class="fa fa-clipboard fa-lg"></i> <cite >微信配置</cite></a></dd>
+                            <!--<dd>
+                                <a class="" href="javascript:;"> <cite >中信支付配置</cite></a>
+                                <dl class="layui-nav-child layui-cite-2">
+                                    <dd><a href="${base}/swift/swiftAccountConfig" target="iframepage"> <cite >威富通账号管理</cite></a></dd>
+                                </dl>
+
+                            </dd>-->
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a href="${base}/enlist/page" target="iframepage"> <cite>报名列表</cite></a></li>
+                    <li class="layui-nav-item"><a href="${base}/users/page" target="iframepage"> <cite>用户管理</cite></a></li>
+                    <li class="layui-nav-item"><a href="${base}/campus/page" target="iframepage"> <cite>校区管理</cite></a></li>
+                </#if>
+            </ul>
+        </div>
+    </div>
+
+    <!--主体-->
+    <div class="layui-body" id="LAY_app_body">
+        <div class="layui-header" style="position: absolute;top: 0;">
+            <!-- 头部区域 -->
+            <ul class="layui-nav layui-layout-left" lay-filter="layadmin-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="javascript:;" layadmin-event="refresh" id="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <input type="text" placeholder="搜索..." autocomplete="off" style="margin-top: 8px;" class="layui-input layui-input-search" layadmin-event="serach" lay-action="template/search/keywords=">
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <a href="javascript:;" layadmin-event="theme">
+                        <i class="layui-icon layui-icon-theme"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="" id="topNav">
+                    <a href="javascript:;">
+                        <span>
+                            <!--判断session中的值是否存在-->
+                            <#if Session["BACK_USER_"]?exists>
+                                <!--存在就显示其属性值
+                                Session["admin"]为取出该session对象-->
+                                ${Session["BACK_USER_"].name}
+
+                            </#if>
+                        </span>
+                        <span class="layui-nav-more"></span>
+                    </a>
+                    <dl class="layui-nav-child" style="cursor: pointer;text-align: center;">
+                        <dd><a lay-href="set/user/info" id="baseInfo">基本资料</a></dd>
+                        <dd><a lay-href="set/user/password" id="editPwd">修改密码</a></dd>
+                        <hr>
+                        <dd layadmin-event="logout" id="logout"><a>退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-fluid" style="padding:0; padding-top: 50px;">
+            <iframe id="iframepage" src="${base}/index" name="iframepage" width="100%" frameborder="0" style="height:calc(100% - 50px)"></iframe>
+        </div>
+    </div>
+</div>
+<!--用于选色效果-->
+<div id='setbgcolor' style="display:none">
+    <div class="layui-layer-shade" id="setbgcolorshade" style="z-index: 19891016; background-color: rgb(0, 0, 0); opacity: 0.3;"></div>
+    <div class="layui-layer-color">
+        <div class='layui-layer-content'>
+            <div class="layui-card-header"> 配色方案 </div>
+            <div class="layui-card-body layadmin-setTheme">
+                <ul class="layadmin-setTheme-color" id='ChangeColor'>
+                    <li layadmin-event="setTheme" data-index="0" data-alias="default" title="default">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #20222A;">
+                            <div class="layadmin-setTheme-logo">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="1" data-alias="dark-blue" title="dark-blue">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #03152A;">
+                            <div class="layadmin-setTheme-logo">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="2" data-alias="coffee" title="coffee">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #2E241B;">
+                            <div class="layadmin-setTheme-logo">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="3" data-alias="purple-red" title="purple-red">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #50314F;">
+                            <div class="layadmin-setTheme-logo">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="4" data-alias="ocean" title="ocean">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #344058;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #1E9FFF;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="5" data-alias="green" title="green">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #3A3D49;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #2F9688;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="6" data-alias="red" title="red">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #20222A;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #F78400;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="7" data-alias="fashion-red"
+                        title="fashion-red">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #28333E;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #AA3130;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="8" data-alias="classic-black"
+                        title="classic-black">
+                        <div class="layadmin-setTheme-header">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #24262F;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #3A3D49;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="9" data-alias="green-header"
+                        title="green-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #2F9688;">
+                        </div>
+                        <div class="layadmin-setTheme-side">
+                            <div class="layadmin-setTheme-logo" style="background-color: #226A62;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="10" data-alias="ocean-header"
+                        title="ocean-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #1E9FFF;">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #344058;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #0085E8;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="11" data-alias="classic-black-header"
+                        title="classic-black-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #393D49;">
+                        </div>
+                        <div class="layadmin-setTheme-side">
+                            <div class="layadmin-setTheme-logo">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="12" data-alias="purple-red-header"
+                        title="purple-red-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #50314F;">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #50314F;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #50314F;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="13" data-alias="fashion-red-header"
+                        title="fashion-red-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #AA3130;">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #28333E;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #28333E;">
+                            </div>
+                        </div>
+                    </li>
+                    <li layadmin-event="setTheme" data-index="14" data-alias="green-header"
+                        title="green-header">
+                        <div class="layadmin-setTheme-header" style="background-color: #009688;">
+                        </div>
+                        <div class="layadmin-setTheme-side" style="background-color: #28333E;">
+                            <div class="layadmin-setTheme-logo" style="background-color: #009688;">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<form action="#" method="post" hidden id="pwdEditForm" class="windowForm">
+    <table style="margin-top: 50px;">
+        <tbody>
+            <tr>
+                <th>旧密码：</th>
+                <td><input type="password" id="oldPassword" value="" placeholder="旧密码" /></td>
+            </tr>
+            <tr>
+                <th>新密码：</th>
+                <td><input type="password" id="newPassword" value="" placeholder="新密码" /></td>
+            </tr>
+            <tr>
+                <th>确认新密码：</th>
+                <td><input type="password" id="confirmNewPassword" value="" placeholder="确认新密码" /></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<!--辅助作用一般用于手机遮罩层-->
+<div class="layui-layer-shade mobilenav" id="mobilenav" onClick="clearmobilenav()" style="z-index: 998; background-color: rgb(0, 0, 0); opacity: 0.3;display:none"></div>
+</body>
+<script type="text/javascript" src="${base}/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="${base}/layui/layui.js?t=2"></script>
+<script type="text/javascript" src="${base}/js/common.js?t=2"></script>
+<script type="text/javascript" src="${base}/js/layer/layer.js"></script>
+<link rel="stylesheet" href="${base}/js/msgbox/msgbox.css" />
+<script src="${base}/js/msgbox/msgbox.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#logout").click(function () {
+            var index = layer.confirm('您确认要退出吗？', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                $(location).prop('href', '${base}/login/logout');
+                history.pushState(null, null, "${base}/login/index");
+                window.addEventListener('popstate', function () {
+                    history.pushState(null, null, "${base}/login/index");
+                });
+            }, function(){
+                layer.close(home1);
+                return false;
+            });
+        })
+        $("#refresh").click(function () {
+            document.getElementById('iframepage').contentWindow.location.reload(true);
+        })
+        $("#editPwd").click(function () {
+            $("#pwdEditForm")[0].reset();
+            layer.open({
+                title: "修改密码",
+                type: 1, //page层
+                area: ['400px', '320px'],
+                shade: 0.6, //遮罩透明度
+                closeBtn: 2,
+                shift: 0, //0-6的动画形式，-1不开启
+                content: $("#pwdEditForm"),
+                btn: ['确定','取消'],
+                yes: function(index, layero){
+                    ZENG.msgbox.show("保存中,请稍候...", 6);
+                    var oldPassword = $("#oldPassword").val();
+                    var newPassword = $("#newPassword").val();
+                    var confirmNewPassword = $("#confirmNewPassword").val();
+                    if(!oldPassword) {
+                        ZENG.msgbox.show("旧密码不能为空", 1, 2500);
+                        return false;
+                    }
+                    if(!newPassword) {
+                        ZENG.msgbox.show("新密码不能为空", 1, 2500);
+                        return false;
+                    }
+                    if(!confirmNewPassword) {
+                        ZENG.msgbox.show("确认新密码不能为空", 1, 2500);
+                        return false;
+                    }
+                    if(newPassword != confirmNewPassword){
+                        ZENG.msgbox.show("新密码与确认新密码不一致", 1, 2500);
+                        return false;
+                    }
+
+                    var param = {
+                        oldPassword : oldPassword,
+                        newPassword : newPassword
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "${base}/users/editPwd",
+                        data: param,
+                        dataType: "json",
+                        success: function(data){
+                            if(data){
+                                ZENG.msgbox.hide();
+                                if(data.code == 1 && data.data){
+                                    ZENG.msgbox.show(data.data, 4, 2500);
+                                    layer.close(home1);
+                                }else{
+                                    ZENG.msgbox.show(data.msg, 5, 2500);
+                                }
+                            }
+                        }
+                    });
+                    return false;
+                },
+                btn2: function(index, layero){
+                    layer.close(home1);
+                }
+            });
+        })
+        $("#topNav").click(function () {
+            //$("#topNav dd").removeClass("layui-this");
+        })
+    })
+</script>
+</html>

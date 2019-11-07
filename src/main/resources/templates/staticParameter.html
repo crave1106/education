@@ -1,0 +1,231 @@
+<#assign base=request.contextPath />
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<base id="base" href="${base}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>静态参数维护</title>
+    <link rel="stylesheet" href="${base}/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="${base}/css/main.css" media="all">
+</head>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row pub-head">
+            <!-- 简易搜索 -->
+            <div class="display-flex align-items-center" style="height:90px;">
+                <div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+                    <button class="layui-btn diy-add-btn" id="add">新增静态参数</button>
+                </div>
+            </div>
+        </div>
+        <div class="main">
+            <table id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+    <div id="addInfo" class="opentPadding" style="display:none;">
+        <div class="layui-fluid">
+            <form class="layui-form" lay-filter="subForms" action="">
+                <input type="hidden" name="id" />
+                <div class="layui-form-item">
+                    <label class="layui-form-label">参数名称</label>
+                    <div class="layui-input-inline diy-required">
+                        <input type="text" name="name" required lay-verify="required" placeholder="请输入参数名称" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">列名</label>
+                    <div class="layui-input-inline diy-required">
+                        <input type="text" name="key" required lay-verify="required" placeholder="请输入列名"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">唯一标识</label>
+                    <div class="layui-input-inline diy-required">
+                        <input type="text" name="uniqueKey" required lay-verify="required" placeholder="请输入唯一标识"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">参数值</label>
+                    <div class="layui-input-inline diy-required">
+                        <input type="text" name="value" required lay-verify="required" placeholder="请输入参数值" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">描述</label>
+                    <div class="layui-input-inline">
+                        <textarea name="description" placeholder="请输入" class="layui-textarea" autocomplete="off"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="display-flex justify-content-center">
+                        <button class="layui-btn diy-default-btn" lay-submit lay-filter="subform">保存</button>
+                        <button type="reset" class="layui-btn diy-default-close-btn" id="closeForm" onclick="layer.closeAll()">关闭</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="text/html" id="tools">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+</body>
+<script type="text/javascript" src="${base}/layui/layui.js"></script>
+<script type="text/javascript" src="${base}/js/date.js"></script>
+<script type="text/javascript" src="${base}/js/main.js"></script>
+<script type="text/javascript">
+    var isEdit = false;
+    layui.use(['table'],function (){
+        var $ = layui.jquery,
+            table = layui.table,
+            laydate = layui.laydate,
+            layer = layui.layer,
+            form = layui.form;
+
+        // 引入改变必填项提示
+        changeRequiredTip();
+        // 引入自定义模态框关闭
+        closeModel()
+
+        // 表格渲染
+        var tableParam = {};
+        tableParam.url = '${base}/staticParam/queryList';
+        tableParam.cols = [ //表头
+            { field: 'name', align: 'center', title: '参数名称', minWidth: 80 }
+            , { field: 'key', align: 'center', title: '列名', minWidth: 80 }
+            , { field: 'uniqueKey', align: 'center', title: '唯一标识', minWidth: 80 }
+            , { field: 'value', align: 'center', title: '参数值' }
+            , { field: 'description', align: 'center', title: '描述' }
+            , { title: '操作', align: 'center', minWidth: 180, templet: '#tools' }
+        ];
+        tableParam.page = { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+            //,curr: 5 //设定初始在第 5 页
+            , groups: 1 //只显示 1 个连续页码
+            , first: false
+            , last: false
+        }
+        tableParam.parseData = function (res) {
+            if (res.code == 1) {
+                return {
+                    "code": '0',
+                    "count": res.data.total,
+                    "data": res.data.list
+                }
+            }
+        }
+        tableList('tableList', tableParam);
+
+        var active = {
+            reload: function () {
+                table.reload('tableList', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+            }
+        }
+
+        $('#add').click(function () {
+            isEdit = false;
+            layer.open({
+                type: 1,
+                title: '添加静态参数',
+                area: ['450px', '480px'],
+                content: $('#addInfo'),
+                success: function () {
+                    $('input').val('')
+                }
+            })
+        })
+
+        form.on('submit(subform)', function (data) {
+            var url = '';
+            if (isEdit) {
+                url = '${base}/staticParam/edit';
+            } else {
+                url = '${base}/staticParam/add';
+                delete data.field.id
+            }
+
+            $.ajax({
+                url: url,
+                data: data.field,
+                type: 'post',
+                headers: {
+                    'Content-Type': "application/x-www-form-urlencoded"
+                },
+                success: function (res) {
+                    if (res.code == 1) {
+                        layer.msg('添加成功');
+                        //同步更新缓存对应的值
+
+                        active.reload();
+
+                        layer.closeAll();
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 5,
+                        });
+                    }
+                }
+            })
+            return false;
+        });
+
+        table.on('tool(tableList)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            var tr = obj.tr;
+            if (layEvent === 'del') {
+                layer.confirm('真的要删除' + data.name + '?', function (index) {
+                    $.ajax({
+                        url: '${base}/staticParam/del',
+                        data: { id: data.id },
+                        type: 'post',
+                        headers: {
+                            'Content-Type': "application/x-www-form-urlencoded"
+                        },
+                        success: function (res) {
+                            if (res.code == 1) {
+                                layer.msg('删除成功')
+                                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                layer.close(index);
+                            } else {
+                                layer.msg('删除失败')
+                            }
+                        }
+                    })
+                });
+            } else if (layEvent === 'edit') { //编辑
+                //do something
+                isEdit = true;
+                layer.open({
+                    type: 1,
+                    title: '编辑静态参数',
+                    area: ['450px', '480px'],
+                    content: $('#addInfo'),
+                    success: function () {
+                        // ${base}/staticParam/queryId  id查询详情
+                        form.val("subForms", {
+                            "id": data.id // "name": "value"
+                            , "name": data.name
+                            , "key": data.key
+                            , "uniqueKey": data.uniqueKey
+                            , "value": data.value
+                            , "description": data.description
+                        })
+                    }
+                })
+
+            }
+        })
+    })
+
+</script>
+</html>
