@@ -104,7 +104,7 @@
     from assist
     <where>
       <if test="openId != null and openId != ''">
-        openid = #{openId,jdbcType=VARCHAR}
+        open_id = #{openId,jdbcType=VARCHAR}
       </if>
     </where>
   </select>

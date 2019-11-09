@@ -156,8 +156,8 @@
 
   <select id="wechatQueryList" parameterType="java.lang.String" resultType="java.util.Map">
     select
-        s.id,
-        s.campus_name as campusName
+        id,
+        campus_name as campusName
     from
         campus
     <where>

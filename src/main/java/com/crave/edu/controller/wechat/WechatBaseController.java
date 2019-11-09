@@ -43,7 +43,8 @@ public class WechatBaseController {
              * https://api.weixin.qq.com/sns/oauth2/access_token?
              * appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
              */
-            String url = Constant.ACCESS_TOKEN_URL+"?appid="+Constant.APP_ID+"&secret="+Constant.APP_SECRET+"&code="+code+"&grant_type=authorization_code";
+            WechatConfigWithBLOBs wechatConfig = getWechatConfig();
+            String url = Constant.ACCESS_TOKEN_URL+"?appid="+wechatConfig.getAppId()+"&secret="+wechatConfig.getAppSecret()+"&code="+code+"&grant_type=authorization_code";
             System.out.println(url);
             String jsonStr = HttpUtil.doGet(url);
             System.out.println(jsonStr);
@@ -62,6 +63,10 @@ public class WechatBaseController {
     @RequestMapping("/getBaseInfo")
     @ResponseBody
     public ResponseBean getWeChatBaseInfo(){
+        return ResponseBean.getSuccess(getWechatConfig());
+    }
+
+    private WechatConfigWithBLOBs getWechatConfig(){
         String wechatConfigCatch = redisTemplate.opsForValue().get(Constant.WECHAT_CONFIG_KEY);
         WechatConfigWithBLOBs wechatConfig = null;
         if (StringUtils.isNotBlank(wechatConfigCatch)){
@@ -74,6 +79,6 @@ public class WechatBaseController {
                 redisTemplate.opsForValue().set(Constant.WECHAT_CONFIG_KEY, JSON.toJSONString(wechatConfig));
             }
         }
-        return ResponseBean.getSuccess(wechatConfig);
+        return wechatConfig;
     }
 }

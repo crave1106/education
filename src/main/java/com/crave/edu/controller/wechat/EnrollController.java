@@ -1,5 +1,7 @@
 package com.crave.edu.controller.wechat;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.crave.edu.bean.ResponseBean;
 import com.crave.edu.bean.Students;
 import com.crave.edu.bean.StudentsExample;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +115,22 @@ public class EnrollController {
      */
     @RequestMapping("/add")
     @ResponseBody
-    public ResponseBean add(Students students){
+    public ResponseBean add(Students students, String code, HttpSession session){
         try {
             ResponseBean responseBean = validParam(students, 0);
             if (null != responseBean){
                 return responseBean;
+            }
+            Long expire = redisTemplate.boundHashOps(session.getId()).getExpire();
+            if (expire > 0){
+                String cache = redisTemplate.opsForValue().get(session.getId());
+                Map cacheMap = JSONObject.parseObject(cache, Map.class);
+                String cacheCode = cacheMap.get("code").toString();
+                if (StringUtils.isBlank(code) || !code.equals(cacheCode)){
+                    return ResponseBean.getFail("验证码输入有误, 请重新输入");
+                }
+            }else{
+                return ResponseBean.getFail("验证码已失效, 请重新获取");
             }
 
             StudentsExample example = new StudentsExample();
