@@ -25,19 +25,19 @@ public class MessageController {
 
     @RequestMapping("/send")
     @ResponseBody
-    public ResponseBean send(String mobile, HttpSession session){
+    public ResponseBean send(String mobile, HttpSession session,String openId){
         try {
             if (!MobileUtil.checkPhone(mobile)){
                 return ResponseBean.getFail("手机号码不能为空");
             }
 
-            if (redisTemplate.hasKey(session.getId())){
+            if (redisTemplate.hasKey(openId)){
                 long nd = 1000 * 24 * 60 * 60;
                 long nh = 1000 * 60 * 60;
                 long nm = 1000 * 60;
                 long ns = 1000;
 
-                String cache = redisTemplate.opsForValue().get(session.getId());
+                String cache = redisTemplate.opsForValue().get(openId);
                 Map cacheMap = JSONObject.parseObject(cache, Map.class);
                 long sendTime = Long.parseLong(cacheMap.get("sendTime").toString());
                 long thisTime = System.currentTimeMillis();
@@ -54,7 +54,7 @@ public class MessageController {
             Map<String,Object> map = new HashMap<String, Object>();
             map.put("code", code);
             map.put("sendTime", System.currentTimeMillis());
-            redisTemplate.opsForValue().set(session.getId(), JSON.toJSONString(map), 10, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(openId, JSON.toJSONString(map), 10, TimeUnit.MINUTES);
             return ResponseBean.getSuccess();
         } catch (Exception e) {
             e.printStackTrace();

@@ -121,9 +121,9 @@ public class EnrollController {
             if (null != responseBean){
                 return responseBean;
             }
-            Long expire = redisTemplate.boundHashOps(session.getId()).getExpire();
+            Long expire = redisTemplate.boundHashOps(students.getOpenId()).getExpire();
             if (expire > 0){
-                String cache = redisTemplate.opsForValue().get(session.getId());
+                String cache = redisTemplate.opsForValue().get(students.getOpenId());
                 Map cacheMap = JSONObject.parseObject(cache, Map.class);
                 String cacheCode = cacheMap.get("code").toString();
                 if (StringUtils.isBlank(code) || !code.equals(cacheCode)){
@@ -197,10 +197,10 @@ public class EnrollController {
             Students students = null;
             if (null != isEnroll && isEnroll.size() > 0){
                 students = isEnroll.get(0);
-                map.put("thisEnrollInfo", students);
+                map.put("enrollInfo", students);
                 map.put("isEnroll", true);
             }else{
-                map.put("thisEnrollInfo", null);
+                map.put("enrollInfo", null);
                 map.put("isEnroll", false);
             }
             map.put("helpName", null);

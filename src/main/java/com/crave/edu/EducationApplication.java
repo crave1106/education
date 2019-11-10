@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.crave.edu.mapper.**")
 @SpringBootApplication
 @EnableTransactionManagement
-public class EducationApplication /*extends SpringBootServletInitializer*/ {
+public class EducationApplication extends SpringBootServletInitializer {
 
-    /*@Override
+    @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder springApplicationBuilder){
         return springApplicationBuilder.sources(EducationApplication.class);
-    }*/
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(EducationApplication.class, args);
