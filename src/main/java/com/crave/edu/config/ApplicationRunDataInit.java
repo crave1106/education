@@ -2,7 +2,9 @@ package com.crave.edu.config;
 
 import com.alibaba.fastjson.JSON;
 import com.crave.edu.bean.WechatConfigWithBLOBs;
+import com.crave.edu.commons.AccessTokenThread;
 import com.crave.edu.commons.Constant;
+import com.crave.edu.commons.JsApiTicketThread;
 import com.crave.edu.mapper.WechatConfigDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -33,5 +35,17 @@ public class ApplicationRunDataInit implements ApplicationRunner {
             wechatConfig = wechatConfigs.get(0);
         }
         redisTemplate.opsForValue().set(Constant.WECHAT_CONFIG_KEY, JSON.toJSONString(wechatConfig));
+
+
+        // 获取web.xml中配置的参数
+        AccessTokenThread.appid = wechatConfig.getAppId();
+        AccessTokenThread.appsecret = wechatConfig.getAppSecret();
+
+        if ("".equals(wechatConfig.getAppId()) || "".equals(wechatConfig.getAppSecret())) {
+            System.out.println("appid和appsecret未给出");
+        } else {
+            new Thread(new AccessTokenThread()).start();
+            new Thread(new JsApiTicketThread()).start();
+        }
     }
 }
